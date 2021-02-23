@@ -80,7 +80,7 @@ func main() {
 
 	var commitHistory = getApiGithubCommitsEvent(gitPullRequestUrl.CommitsUrl)
 
-	payload := strings.NewReader("{\"text\": \"PR OPEN: " + gitPullRequestUrl.Title + "\\n\\n" + commitHistory + "\"}")
+	payload := strings.NewReader("{\"text\": \"PR OPEN: " + gitPullRequestUrl.Title + "\\n" + gitPullRequestUrl.HtmlUrl + "\\n\\n" + commitHistory + "\"}")
 
 	// http post
 	client := &http.Client{}
