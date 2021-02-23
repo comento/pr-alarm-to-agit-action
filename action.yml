@@ -1,0 +1,21 @@
+# action.yml
+name: 'Notify pr to agit'
+description: 'Notify agit when pr is open'
+inputs:
+  url:
+    description: 'Agit webhook url'
+    required: true
+    default: ''
+  event:
+    description: 'Github pr event url'
+    required: true
+    default: ''
+outputs:
+  response:
+    description: 'Agit webhook response'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.url }}
+    - ${{ inputs.event }}
