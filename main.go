@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -28,18 +29,21 @@ type Committer struct {
 	Name string `json:"name"`
 }
 
-func getApiGithubEvent(event string) GitPullRequestUrl {
-	res, err := http.Get(event)
+func getApiGithubEvent(event string, token string, private bool) GitPullRequestUrl {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", event, nil)
 	if err != nil {
 		panic(err)
 	}
 
+	if private {
+		req.Header.Add("Authorization", "Bearer "+token)
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, _ := client.Do(req)
 	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
-	}
+	body, _ := ioutil.ReadAll(res.Body)
 
 	var gitPullRequestUrl GitPullRequestUrl
 	json.Unmarshal([]byte(body), &gitPullRequestUrl)
@@ -47,18 +51,21 @@ func getApiGithubEvent(event string) GitPullRequestUrl {
 	return gitPullRequestUrl
 }
 
-func getApiGithubCommitsEvent(url string) string {
-	res, err := http.Get(url)
+func getApiGithubCommitsEvent(url string, token string, private bool) string {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		panic(err)
 	}
 
+	if private {
+		req.Header.Add("Authorization", "Bearer "+token)
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, _ := client.Do(req)
 	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
-	}
+	body, _ := ioutil.ReadAll(res.Body)
 
 	var gitCommitsApi []GitCommitsApi
 	json.Unmarshal([]byte(body), &gitCommitsApi)
@@ -74,11 +81,13 @@ func getApiGithubCommitsEvent(url string) string {
 func main() {
 	url := os.Getenv("INPUT_URL")
 	event := os.Getenv("INPUT_EVENT")
+	private, _ := strconv.ParseBool(os.Getenv("INPUT_PRIVATE"))
+	token := os.Getenv("INPUT_TOKEN")
 
 	var gitPullRequestUrl GitPullRequestUrl
-	gitPullRequestUrl = getApiGithubEvent(event)
+	gitPullRequestUrl = getApiGithubEvent(event, token, private)
 
-	var commitHistory = getApiGithubCommitsEvent(gitPullRequestUrl.CommitsUrl)
+	var commitHistory = getApiGithubCommitsEvent(gitPullRequestUrl.CommitsUrl, token, private)
 
 	payload := strings.NewReader("{\"text\": \"PR OPEN: " + gitPullRequestUrl.Title + "\\n" + gitPullRequestUrl.HtmlUrl + "\\n\\n" + commitHistory + "\"}")
 

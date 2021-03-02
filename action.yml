@@ -10,6 +10,14 @@ inputs:
     description: 'Github pr event url'
     required: true
     default: ''
+  private:
+    description: 'Repository type'
+    required: false
+    default: 'false'
+  token:
+    description: 'Github ACCESS TOKEN'
+    required: false
+    default: ''
 outputs:
   response:
     description: 'Agit webhook response'
@@ -19,3 +27,5 @@ runs:
   args:
     - ${{ inputs.url }}
     - ${{ inputs.event }}
+    - ${{ inputs.private }}
+    - ${{ inputs.token }}
