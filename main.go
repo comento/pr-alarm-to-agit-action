@@ -58,7 +58,9 @@ func getApiGithubCommitsEvent(url string, token string, private bool) string {
 		panic(err)
 	}
 
-	req.Header.Add("Authorization", "Bearer " + token)
+	if private {
+		req.Header.Add("Authorization", "Bearer "+token)
+	}
 	req.Header.Add("Content-Type", "application/json")
 
 	res, _ := client.Do(req)
