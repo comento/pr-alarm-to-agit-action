@@ -58,9 +58,7 @@ func getApiGithubCommitsEvent(url string, token string, private bool) string {
 		panic(err)
 	}
 
-	if private {
-		req.Header.Add("Authorization", "Bearer "+token)
-	}
+	req.Header.Add("Authorization", "Bearer " + token)
 	req.Header.Add("Content-Type", "application/json")
 
 	res, _ := client.Do(req)
@@ -72,7 +70,7 @@ func getApiGithubCommitsEvent(url string, token string, private bool) string {
 
 	var commitHistory string
 	for i := range gitCommitsApi {
-		commitHistory += gitCommitsApi[i].GitCommit.Committer.Name + ": " + gitCommitsApi[i].GitCommit.Message + "\\n"
+		commitHistory += "*" + gitCommitsApi[i].GitCommit.Committer.Name + "*: " + strings.Replace(gitCommitsApi[i].GitCommit.Message, "\n", "\\n", -1) + "\\n"
 	}
 
 	return commitHistory
