@@ -12,6 +12,14 @@ This action that notifies agit when pr is open.
 
 **Required** Github PR Event api url. Default `""`.
 
+### `private`
+
+Repository type. Default `false`.
+
+### `token`
+
+Github ACCESS TOKEN. Default `""`.
+
 ## Outputs
 
 ### `response`
@@ -24,4 +32,6 @@ uses: comento/pr-alarm-to-agit-action@master
 with:
     url: ${{ secrets.agit_webhook }}
     event: ${{ github.event.pull_request.url }}
+    private: true
+    token: ${{ secrets.TOKEN }}
 ```
